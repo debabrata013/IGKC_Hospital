@@ -11,6 +11,7 @@ import AboutPage from './components/About';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
+import PatientDashboard from './pages/PatientDashboard';
 function App() {
   // const [count, setCount] = useState(0)
 
@@ -24,6 +25,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/ad" element={<AdminDashboard />}/>
+            <Route path="/dd" element={<DoctorDashboard />}/>
+
             <Route
               path="/admin-dashboard"
               element={

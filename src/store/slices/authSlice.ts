@@ -49,6 +49,10 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    //reducers k ander aata hai proprty and function dono
+    // logout proprty, logout function and in function we have 2 think 
+    // state  : initialstate ka access , action : hamko action ki information mil jati hai like valus of specfic property 
+    
     logout: (state) => {
       state.user = null;
       state.error = null;
