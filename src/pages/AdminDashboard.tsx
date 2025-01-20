@@ -89,7 +89,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Cell
 } from 'recharts';
 
 import UserManagement from '../components/admin/UserManagement';
@@ -108,7 +109,15 @@ const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Sample data for charts
+  // Updated color scheme
+  const colors = {
+    blue: '#4F46E5',
+    pink: '#EC4899',
+    green: '#10B981',
+    yellow: '#F59E0B',
+    darkGray: '#f0f0f0'
+  };
+
   const patientData = [
     { month: 'Jan', admitted: 65, discharged: 45 },
     { month: 'Feb', admitted: 75, discharged: 55 },
@@ -119,8 +128,8 @@ const AdminDashboard: React.FC = () => {
   ];
 
   const bedUtilization = [
-    { name: 'Occupied', value: 75 },
-    { name: 'Available', value: 25 }
+    { name: 'Occupied', value: 75, color: colors.blue },
+    { name: 'Available', value: 25, color: colors.pink }
   ];
 
   const revenueData = [
@@ -141,85 +150,94 @@ const AdminDashboard: React.FC = () => {
   ];
 
   const DashboardContent = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Stats Cards */}
-      <div className="col-span-2 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-blue-500 text-white p-4 rounded-lg">
+      <div className="col-span-2 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white p-6 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
-            <Users className="w-8 h-8" />
-            <span className="text-2xl font-bold">1,234</span>
+            <Users className="w-10 h-10" />
+            <span className="text-3xl font-bold">1,234</span>
           </div>
-          <p className="mt-2">Total Patients</p>
+          <p className="mt-3 text-indigo-100">Total Patients</p>
         </div>
-        <div className="bg-green-500 text-white p-4 rounded-lg">
+        <div className="bg-gradient-to-br from-pink-600 to-pink-700 text-white p-6 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
-            <UserCog className="w-8 h-8" />
-            <span className="text-2xl font-bold">45</span>
+            <UserCog className="w-10 h-10" />
+            <span className="text-3xl font-bold">45</span>
           </div>
-          <p className="mt-2">Active Doctors</p>
+          <p className="mt-3 text-pink-100">Active Doctors</p>
         </div>
-        <div className="bg-purple-500 text-white p-4 rounded-lg">
+        <div className="bg-gradient-to-br from-green-600 to-green-700 text-white p-6 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
-            <Bed className="w-8 h-8" />
-            <span className="text-2xl font-bold">85%</span>
+            <Bed className="w-10 h-10" />
+            <span className="text-3xl font-bold">85%</span>
           </div>
-          <p className="mt-2">Bed Occupancy</p>
+          <p className="mt-3 text-green-100">Bed Occupancy</p>
         </div>
-        <div className="bg-orange-500 text-white p-4 rounded-lg">
+        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white p-6 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
-            <Calendar className="w-8 h-8" />
-            <span className="text-2xl font-bold">156</span>
+            <Calendar className="w-10 h-10" />
+            <span className="text-3xl font-bold">156</span>
           </div>
-          <p className="mt-2">Appointments</p>
+          <p className="mt-3 text-yellow-50">Appointments</p>
         </div>
       </div>
 
       {/* Patient Trends Chart */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Patient Trends</h3>
+      <div className="bg-white p-6 rounded-xl shadow-lg">
+        <h3 className="text-xl font-bold mb-6 text-gray-800">Patient Trends</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={patientData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
+          <LineChart data={patientData} style={{ backgroundColor: colors.darkGray }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis dataKey="month" stroke="#9CA3AF" />
+            <YAxis stroke="#9CA3AF" />
+            <Tooltip contentStyle={{ backgroundColor: colors.darkGray, borderColor: '#4B5563' }} />
             <Legend />
-            <Line type="monotone" dataKey="admitted" stroke="#3b82f6" />
-            <Line type="monotone" dataKey="discharged" stroke="#10b981" />
+            <Line type="monotone" dataKey="admitted" stroke={colors.blue} strokeWidth={2} />
+            <Line type="monotone" dataKey="discharged" stroke={colors.pink} strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Bed Utilization Chart */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Bed Utilization</h3>
+      <div className="bg-white p-6 rounded-xl shadow-lg">
+        <h3 className="text-xl font-bold mb-6 text-gray-800">Bed Utilization</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
+          <PieChart style={{ backgroundColor: colors.darkGray }}>
             <Pie
               data={bedUtilization}
               cx="50%"
               cy="50%"
               outerRadius={100}
-              fill="#3b82f6"
               dataKey="value"
               label
-            />
-            <Tooltip />
+            >
+              {bedUtilization.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip contentStyle={{ backgroundColor: colors.darkGray, borderColor: '#4B5563' }} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
       </div>
 
       {/* Revenue Chart */}
-      <div className="col-span-2 bg-white p-4 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Revenue Overview</h3>
+      <div className="col-span-2 bg-white p-6 rounded-xl shadow-lg">
+        <h3 className="text-xl font-bold mb-6 text-gray-800">Revenue Overview</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={revenueData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Area type="monotone" dataKey="revenue" fill="#3b82f6" stroke="#2563eb" />
+          <AreaChart data={revenueData} style={{ backgroundColor: colors.darkGray }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis dataKey="month" stroke="#9CA3AF" />
+            <YAxis stroke="#9CA3AF" />
+            <Tooltip contentStyle={{ backgroundColor: colors.darkGray, borderColor: '#4B5563' }} />
+            <Area 
+              type="monotone" 
+              dataKey="revenue" 
+              fill={colors.green} 
+              stroke={colors.yellow}
+              fillOpacity={0.6}
+            />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -227,29 +245,29 @@ const AdminDashboard: React.FC = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className={`bg-white shadow-lg transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
-        <div className="p-4 flex justify-between items-center">
-          {!isSidebarCollapsed && <h2 className="font-bold text-xl">IGKC</h2>}
+      <aside className={`bg-white shadow-xl transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+        <div className="p-6 flex justify-between items-center border-b border-gray-100">
+          {!isSidebarCollapsed && <h2 className="font-bold text-2xl text-gray-800">IGKC</h2>}
           <button
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="p-2 rounded-lg hover:bg-gray-100"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            {isSidebarCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+            {isSidebarCollapsed ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
           </button>
         </div>
-        <nav className="mt-8">
+        <nav className="mt-6">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center p-4 ${
-                activeTab === item.id ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
+              className={`w-full flex items-center p-4 transition-colors ${
+                activeTab === item.id ? 'bg-indigo-50 text-indigo-600 border-r-4 border-indigo-600' : 'text-gray-600 hover:bg-gray-50'
               } ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'}`}
             >
               {item.icon}
-              {!isSidebarCollapsed && <span>{item.title}</span>}
+              {!isSidebarCollapsed && <span className="font-medium">{item.title}</span>}
             </button>
           ))}
         </nav>
@@ -258,12 +276,12 @@ const AdminDashboard: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.email}</p>
+          <h1 className="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
+          <p className="text-gray-600 mt-2">Welcome back, {user?.email}</p>
         </div>
 
         {/* Content based on active tab */}
-        <div className="bg-white rounded-lg shadow-md">
+        <div>
           {activeTab === 'dashboard' && <DashboardContent />}
           {activeTab === 'users' && <UserManagement />}
           {activeTab === 'doctors' && <DoctorManagement />}
