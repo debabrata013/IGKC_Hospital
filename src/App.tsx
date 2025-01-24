@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
+import Patientmedicalrecord from "./components/patient/Messages"
 function App() {
   // const [count, setCount] = useState(0)
 
@@ -27,6 +28,7 @@ function App() {
             <Route path="/ad" element={<AdminDashboard />}/>
             <Route path="/dd" element={<DoctorDashboard />}/>
             <Route path="/pd" element={<PatientDashboard  />}/>
+            <Route path="/pdmr" element={<Patientmedicalrecord  />}/>
 
             <Route
               path="/admin-dashboard"
