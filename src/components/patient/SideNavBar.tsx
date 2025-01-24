@@ -43,7 +43,7 @@ const SideNavBar: React.FC = () => {
           </li>
         ))}
       </ul>
-      <div className="absolute bottom-0 w-full p-4">
+      <div className="absolute bottom-0  p-4">
         <Link to="/logout" className="flex items-center p-4 hover:bg-gray-700">
           <LogOut size={24} className="mr-4" />
           <span className={isExpanded ? 'block' : 'hidden'}>Logout</span>
