@@ -13,6 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
 import Patientmedicalrecord from "./components/patient/Messages"
+import Chat from "./components/patient/chatbot"
 function App() {
   // const [count, setCount] = useState(0)
 
@@ -29,6 +30,7 @@ function App() {
             <Route path="/dd" element={<DoctorDashboard />}/>
             <Route path="/pd" element={<PatientDashboard  />}/>
             <Route path="/pdmr" element={<Patientmedicalrecord  />}/>
+            <Route path="/chat" element={<Chat  />}/>
 
             <Route
               path="/admin-dashboard"
