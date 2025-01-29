@@ -1,120 +1,139 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ["doctor", "patient", "admin"],
-    required: true,
-  },
-  phone: {
-    type: String,
-  },
-  gender: {
-    type: String,
-    enum: ["Male", "Female", "Other"],
-  },
-  dateOfBirth: {
-    type: Date,
-  },
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String,
-  },
-  profileImage: {
-    type: String, // URL or path to image
-  },
-  
-  // Fields specific to Doctors
-  specialization: {
-    type: String,
-    required: function () {
-      return this.role === "doctor";
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-  },
-  licenseNumber: {
-    type: String,
-    required: function () {
-      return this.role === "doctor";
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
-    unique: true,
-  },
-  experience: {
-    type: Number,
-  },
-  availability: [
-    {
-      day: String, // Monday, Tuesday, etc.
-      startTime: String, // "09:00 AM"
-      endTime: String, // "05:00 PM"
+    password: {
+      type: String,
+      required: true,
     },
-  ],
-  patients: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    role: {
+      type: String,
+      enum: ["doctor", "patient", "admin"],
+      required: true,
     },
-  ],
+    phone: {
+      type: String,
+      trim: true,
+    },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    address: {
+      street: { type: String, trim: true },
+      city: { type: String, trim: true },
+      state: { type: String, trim: true },
+      zipCode: { type: String, trim: true },
+      country: { type: String, trim: true },
+    },
+    profileImage: {
+      type: String, // URL or file path
+    },
 
-  // Fields specific to Patients
-  medicalHistory: [
-    {
-      condition: String,
-      diagnosisDate: Date,
-      treatment: String,
+    // Fields specific to Doctors
+    specialization: {
+      type: String,
+      required: function () {
+        return this.role === "doctor";
+      },
+      trim: true,
     },
-  ],
-  allergies: [String],
-  bloodType: {
-    type: String,
-    enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
-  },
-  assignedDoctor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  prescriptions: [
-    {
-      medicineName: String,
-      dosage: String,
-      frequency: String,
-      prescribedBy: {
+    licenseNumber: {
+      type: String,
+      required: function () {
+        return this.role === "doctor";
+      },
+      unique: function () {
+        return this.role === "doctor";
+      },
+      trim: true,
+    },
+    experience: {
+      type: Number,
+      min: 0,
+    },
+    availability: [
+      {
+        day: { type: String, trim: true }, // Example: "Monday"
+        startTime: { type: String, trim: true }, // Example: "09:00 AM"
+        endTime: { type: String, trim: true }, // Example: "05:00 PM"
+      },
+    ],
+    patients: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
-      prescribedDate: Date,
+    ],
+
+    // Fields specific to Patients
+    medicalHistory: [
+      {
+        condition: { type: String, trim: true },
+        diagnosisDate: Date,
+        treatment: { type: String, trim: true },
+      },
+    ],
+    allergies: [{ type: String, trim: true }],
+    bloodType: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
     },
-  ],
+    assignedDoctor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    prescriptions: [
+      {
+        medicineName: { type: String, trim: true },
+        dosage: { type: String, trim: true },
+        frequency: { type: String, trim: true },
+        prescribedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        prescribedDate: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
 
-  // Fields specific to Admins
-  permissions: {
-    type: [String], // Example: ["manage_users", "manage_appointments"]
-  },
+    // Fields specific to Admins
+    permissions: {
+      type: [String], // Example: ["manage_users", "manage_appointments"]
+    },
 
-  // Common Fields
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+    // Common Fields
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
 
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { timestamps: true }
+);
+
+// Exporting the model
 module.exports = mongoose.model("User", userSchema);
