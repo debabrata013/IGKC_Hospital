@@ -14,6 +14,7 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
 import Patientmedicalrecord from "./components/patient/Messages"
 import Chat from "./components/patient/chatbot"
+import ForgotPassword from './pages/Forgetpassword';
 function App() {
   // const [count, setCount] = useState(0)
 
@@ -25,6 +26,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/ad" element={<AdminDashboard />}/>
             <Route path="/dd" element={<DoctorDashboard />}/>
