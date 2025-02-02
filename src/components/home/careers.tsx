@@ -17,7 +17,7 @@ const CareersPage = () => {
       location: 'Main Campus',
       type: 'Full-time',
       experience: 'Senior',
-      salary: '$200,000 - $300,000',
+      salary: '₹200,000 - ₹300,000',
       description: 'Looking for an experienced cardiologist to join our heart center team.',
       requirements: [
         'MD or equivalent medical degree',
@@ -41,7 +41,7 @@ const CareersPage = () => {
       location: 'Emergency Ward',
       type: 'Full-time',
       experience: 'Mid-level',
-      salary: '$65,000 - $85,000',
+      salary: '₹65,000 - ₹85,000',
       description: 'Seeking dedicated nurses for our emergency department.',
       requirements: [
         'BSN degree required',
@@ -65,7 +65,7 @@ const CareersPage = () => {
       location: 'Main Office',
       type: 'Full-time',
       experience: 'Mid-level',
-      salary: '$55,000 - $75,000',
+      salary: '₹55,000 - ₹75,000',
       description: 'Administrative role supporting medical departments.',
       requirements: [
         "Bachelor's degree in Healthcare Administration or related field",
@@ -89,7 +89,7 @@ const CareersPage = () => {
       location: 'Children\'s Wing',
       type: 'Full-time',
       experience: 'Senior',
-      salary: '$180,000 - $250,000',
+      salary: '₹180,000 - ₹250,000',
       description: 'Join our pediatric care team providing comprehensive children\'s healthcare.',
       requirements: [
         'MD with Pediatric specialization',
@@ -113,7 +113,7 @@ const CareersPage = () => {
       location: 'Rehabilitation Center',
       type: 'Part-time',
       experience: 'Entry-level',
-      salary: '$45,000 - $65,000',
+      salary: '₹45,000 - ₹65,000',
       description: 'Physical therapist needed for our growing rehabilitation department.',
       requirements: [
         'DPT degree',
@@ -137,7 +137,7 @@ const CareersPage = () => {
       location: 'Main Campus',
       type: 'Part-time',
       experience: 'Entry-level',
-      salary: '$40,000 - $55,000',
+      salary: '₹40,000 - ₹55,000',
       description: 'Laboratory technician needed for diagnostic testing.',
       requirements: [
         "Associate's degree in Medical Laboratory Science",
@@ -174,7 +174,7 @@ const CareersPage = () => {
 
   const JobCard = ({ job }: { job: typeof jobs[0] }) => (
     <div 
-      className={`p-6 rounded-lg border transition-all duration-200 ${
+      className={`p-6 rounded-lg border transition-all duration-200 ₹{
         selectedJob === job.id 
           ? 'border-blue-500 bg-blue-50' 
           : 'border-gray-200 bg-white hover:border-blue-300'

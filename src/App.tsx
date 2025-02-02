@@ -15,6 +15,9 @@ import PatientDashboard from './pages/PatientDashboard';
 import Patientmedicalrecord from "./components/patient/Messages"
 import Chat from "./components/patient/chatbot"
 import ForgotPassword from './pages/Forgetpassword';
+import ServicesPage from './components/home/service';
+import ContactPage from './components/home/contactus';
+import Careers from './components/home/careers';
 function App() {
   // const [count, setCount] = useState(0)
 
@@ -24,6 +27,10 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/careers" element={<Careers />} />
+
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
