@@ -1,15 +1,20 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-// 📌 Generate JWT Token
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+// 🔹 Generate JWT Token with relevant user info
+const generateToken = (user) => {
+  const payload = {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// 📌 Signup (Register User)
+// 🔹 Signup (Register User)
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, role, phone, gender, dateOfBirth, address } = req.body;
@@ -20,14 +25,11 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
+    // Create new user (password hashing can also be done via a pre-save hook in your model)
     const newUser = new User({
       name,
       email,
-      password: hashedPassword,
+      password,
       role,
       phone,
       gender,
@@ -38,7 +40,7 @@ exports.signup = async (req, res) => {
     await newUser.save();
 
     // Generate JWT token
-    const token = generateToken(newUser._id);
+    const token = generateToken(newUser);
 
     res.status(201).json({ message: "User registered successfully", token, user: newUser });
   } catch (error) {
@@ -46,7 +48,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-// 📌 Login (Sign In)
+// 🔹 Login (Sign In)
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -63,8 +65,8 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Generate token with user details
+    const token = generateToken(user);
 
     res.status(200).json({ message: "Login successful", token, user });
   } catch (error) {
@@ -72,7 +74,15 @@ exports.login = async (req, res) => {
   }
 };
 
-// 📌 Forgot Password (Send Reset Link)
+// 🔹 Logout
+// In stateless JWT authentication, logout is typically handled on the client side by removing the token.
+// If using cookies, you can clear the cookie as shown below.
+exports.logout = async (req, res) => {
+  res.clearCookie("token"); // Clear the token cookie if you set it on login
+  res.status(200).json({ message: "Logout successful" });
+};
+
+// 🔹 Forgot Password (Send OTP for Password Recovery)
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -82,14 +92,14 @@ exports.forgotPassword = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Generate Reset Token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    user.resetPasswordExpires = Date.now() + 3600000; // Token valid for 1 hour
+    // Generate a 6-digit OTP and set expiration (e.g., valid for 10 minutes)
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes from now
 
     await user.save();
 
-    // Send Email (Setup your SMTP configuration)
+    // Setup nodemailer transporter (update with your SMTP/email configuration)
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -98,43 +108,40 @@ exports.forgotPassword = async (req, res) => {
       },
     });
 
-    const resetURL = `${req.protocol}://${req.get("host")}/api/auth/reset-password/${resetToken}`;
-
     const mailOptions = {
       to: user.email,
-      subject: "Password Reset Request",
-      text: `You requested a password reset. Click the link below to reset your password: \n\n ${resetURL}`,
+      subject: "Password Recovery OTP",
+      text: `Your OTP for password recovery is: ${otp}. It is valid for 10 minutes.`,
     };
 
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ message: "Reset password link sent to email" });
+    res.status(200).json({ message: "OTP sent to email" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
-// 📌 Reset Password
+// 🔹 Reset Password (Using OTP)
 exports.resetPassword = async (req, res) => {
   try {
-    const { token } = req.params;
-    const { newPassword } = req.body;
+    const { email, otp, newPassword } = req.body;
 
-    // Find user with the reset token
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    // Find user with the matching OTP that has not expired
     const user = await User.findOne({
-      resetPasswordToken: hashedToken,
-      resetPasswordExpires: { $gt: Date.now() }, // Ensure token is not expired
+      email,
+      otp,
+      otpExpires: { $gt: Date.now() },
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+      return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
-    // Hash new password and save
+    // Hash new password
     user.password = await bcrypt.hash(newPassword, 10);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    user.otp = undefined;
+    user.otpExpires = undefined;
 
     await user.save();
 
@@ -144,7 +151,7 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-// 📌 Protect Routes Middleware
+// 🔹 Protect Routes Middleware
 exports.protect = async (req, res, next) => {
   try {
     let token;
@@ -157,7 +164,7 @@ exports.protect = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.userId).select("-password");
+    req.user = await User.findById(decoded.id).select("-password");
 
     next();
   } catch (error) {

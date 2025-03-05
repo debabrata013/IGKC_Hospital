@@ -271,7 +271,7 @@ const DashboardHome: React.FC = () => {
   const [healthTips, setHealthTips] = useState([]);
 
   useEffect(() => {
-    return setHealthTips(getRandomTips());
+    return setHealthTips(getRandomTips() );
   }, []);
 
 
