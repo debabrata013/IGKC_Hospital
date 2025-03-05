@@ -23,8 +23,11 @@ const Login: React.FC = () => {
         case 'doctor':
           navigate('/doctor-dashboard');
           break;
+          case 'patient':
+            navigate('/patient-dashboard');
+            break;
         default:
-          navigate('/dashboard');
+          navigate('/patient-dashboard');
       }
     } catch (error) {
       console.error('Login failed:', error);
