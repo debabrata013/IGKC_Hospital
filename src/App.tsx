@@ -59,7 +59,7 @@ function App() {
               }
             />
             <Route
-              path="/dashboard"
+              path="/patient-dashboard/*"
               element={
                 <ProtectedRoute allowedRoles={['patient']}>
                   <PatientDashboard />
