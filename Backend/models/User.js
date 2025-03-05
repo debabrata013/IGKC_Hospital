@@ -5,48 +5,88 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
-      trim: true,
+      required: [true, 'Please provide your full name'],
+      trim: true
     },
     email: {
       type: String,
-      required: true,
+      required: [true, 'Please provide your email'],
       unique: true,
       lowercase: true,
       trim: true,
+      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
     },
     password: {
       type: String,
-      required: true,
+      required: [true, 'Please provide a password'],
+      minlength: 8,
+      select: false
     },
     role: {
       type: String,
-      enum: ["doctor", "patient", "admin"],
-      required: true,
+      enum: ['patient', 'doctor', 'admin'],
+      default: 'patient'
     },
     phone: {
       type: String,
       trim: true,
+      validate: {
+        validator: function(v) {
+          return /^[+]?(\d{10,14})$/.test(v);
+        },
+        message: props => `${props.value} is not a valid phone number!`
+      }
+    },
+    address: {
+      street: String,
+      city: String,
+      state: String,
+      zipCode: String,
+      country: String
+    },
+    dateOfBirth: {
+      type: Date
     },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Other"],
+      enum: ['male', 'female', 'other']
     },
-    dateOfBirth: {
-      type: Date,
+    notifications: {
+      email: {
+        type: Boolean,
+        default: true
+      },
+      sms: {
+        type: Boolean,
+        default: false
+      },
+      appointments: {
+        type: Boolean,
+        default: true
+      }
     },
-    address: {
-      street: { type: String, trim: true },
-      city: { type: String, trim: true },
-      state: { type: String, trim: true },
-      zipCode: { type: String, trim: true },
-      country: { type: String, trim: true },
+    profilePicture: {
+      type: String,
+      default: 'default-profile.png'
     },
-    profileImage: {
-      type: String, // URL or file path
+    medicalHistory: [{
+      condition: String,
+      diagnosis: String,
+      date: Date
+    }],
+    emergencyContact: {
+      name: String,
+      relationship: String,
+      phone: String
     },
-
-    // Fields specific to Doctors
+    preferences: {
+      language: String,
+      theme: String
+    },
+    active: {
+      type: Boolean,
+      default: true
+    },
     specialization: {
       type: String,
       required: function () {
@@ -81,15 +121,6 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-
-    // Fields specific to Patients
-    medicalHistory: [
-      {
-        condition: { type: String, trim: true },
-        diagnosisDate: Date,
-        treatment: { type: String, trim: true },
-      },
-    ],
     allergies: [{ type: String, trim: true }],
     bloodType: {
       type: String,
@@ -114,26 +145,17 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-
-    // Fields specific to Admins
     permissions: {
       type: [String], // Example: ["manage_users", "manage_appointments"]
     },
-
-    // Common Fields
     resetPasswordToken: String,
     resetPasswordExpires: Date,
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
 
 // **Hash Password Before Saving**
