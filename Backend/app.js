@@ -19,10 +19,7 @@ app.use("/api/auth", authRoutes);
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, {
-    tls: true,
-    tlsAllowInvalidCertificates: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
