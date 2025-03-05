@@ -2,9 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 interface User {
+  name: string;
   email: string;
   token: string;
-  role: 'admin' | 'doctor' | 'user';
+  role: 'admin' | 'doctor' | 'patient';
+
+
 }
 
 interface AuthState {
@@ -13,49 +16,53 @@ interface AuthState {
   error: string | null;
 }
 
+const API_URL = 'http://localhost:3000/api/auth'; // Replace with your actual backend API
+
 const initialState: AuthState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem('user') || 'null'), // Persist session
   loading: false,
   error: null,
 };
 
+// Async action for login
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('https://api.example.com/login', credentials);
-      // Assuming the API returns user data including the role
-      return response.data;
-    } catch (error) {
-      return rejectWithValue('Login failed. Please check your credentials.');
+      const response = await axios.post(`${API_URL}/login`, credentials);
+      const userData = response.data;
+      localStorage.setItem('user', JSON.stringify(userData)); // Store user in localStorage
+      return userData;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Login failed.');
     }
   }
 );
 
+// Async action for signup
 export const signup = createAsyncThunk(
   'auth/signup',
-  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+  async (credentials: { name: string; email: string; password: string; role: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('https://api.example.com/signup', credentials);
-      // Assuming the API returns user data including the role (default to 'user')
-      return { ...response.data, role: 'user' };
-    } catch (error) {
-      return rejectWithValue('Signup failed. Please try again.');
+      const response = await axios.post(`${API_URL}/signup`, credentials);
+      const userData = response.data;
+      localStorage.setItem('user', JSON.stringify(userData)); // Store user in localStorage
+      return userData;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Signup failed.');
     }
   }
 );
 
+// Slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    //reducers k ander aata hai proprty and function dono
-    // logout proprty, logout function and in function we have 2 think 
-    // state  : initialstate ka access , action : hamko action ki information mil jati hai like valus of specfic property 
-    
     logout: (state) => {
       state.user = null;
       state.error = null;
+      localStorage.removeItem('user'); // Remove from localStorage on logout
     },
   },
   extraReducers: (builder) => {
@@ -89,4 +96,3 @@ const authSlice = createSlice({
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
-
