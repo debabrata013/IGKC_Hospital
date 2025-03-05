@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
@@ -8,19 +8,17 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AboutPage from './components/About';
-import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
-import Patientmedicalrecord from "./components/patient/Messages"
-import Chat from "./components/patient/chatbot"
+import Patientmedicalrecord from "./components/patient/Messages";
+import Chat from "./components/patient/chatbot";
 import ForgotPassword from './pages/Forgetpassword';
 import ServicesPage from './components/home/service';
 import ContactPage from './components/home/contactus';
 import Careers from './components/home/careers';
-function App() {
-  // const [count, setCount] = useState(0)
 
+function App() {
   return (
     <Provider store={store}>
       <Router>
@@ -35,12 +33,15 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/ad" element={<AdminDashboard />}/>
-            <Route path="/dd" element={<DoctorDashboard />}/>
-            <Route path="/pd" element={<PatientDashboard  />}/>
-            <Route path="/pdmr" element={<Patientmedicalrecord  />}/>
-            <Route path="/chat" element={<Chat  />}/>
 
+            {/* Unprotected routes (for testing purposes) */}
+            <Route path="/ad" element={<AdminDashboard />} />
+            <Route path="/dd" element={<DoctorDashboard />} />
+            <Route path="/pd" element={<PatientDashboard />} />
+            <Route path="/pdmr" element={<Patientmedicalrecord />} />
+            <Route path="/chat" element={<Chat />} />
+
+            {/* Protected Routes */}
             <Route
               path="/admin-dashboard"
               element={
@@ -60,8 +61,8 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute allowedRoles={['user']}>
-                  <Dashboard />
+                <ProtectedRoute allowedRoles={['patient']}>
+                  <PatientDashboard />
                 </ProtectedRoute>
               }
             />
@@ -69,7 +70,7 @@ function App() {
         </Layout>
       </Router>
     </Provider>
-  )
+  );
 }
 
-export default App
+export default App;
